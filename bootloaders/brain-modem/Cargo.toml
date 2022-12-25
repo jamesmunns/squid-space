@@ -1,6 +1,6 @@
 [package]
 authors = ["James Munns <james@onevariable.com>"]
-name = "node-bootloader"
+name = "brain-bootloader"
 edition = "2021"
 version = "0.1.0"
 
