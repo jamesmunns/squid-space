@@ -4,7 +4,7 @@
 use core::sync::atomic::Ordering;
 
 use cortex_m::peripheral::SCB;
-use node_bootloader::{self as _, GlobalRollingTimer}; // global logger + panicking-behavior + memory layout
+use brain_bootloader::{self as _, GlobalRollingTimer}; // global logger + panicking-behavior + memory layout
 
 use hal::block;
 use hal::hal::serial::{Read, Write};
