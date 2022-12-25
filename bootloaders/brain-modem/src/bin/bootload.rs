@@ -6,16 +6,22 @@ use core::sync::atomic::Ordering;
 use cortex_m::peripheral::SCB;
 use node_bootloader::{self as _, GlobalRollingTimer}; // global logger + panicking-behavior + memory layout
 
-use hal::{
-    gpio::GpioExt,
-    rcc::{Config, PllConfig, Prescaler, RccExt},
-    stm32,
-    prelude::{OutputPin, ToggleableOutputPin}, serial::BasicConfig, time::U32Ext, flash::{UnlockedFlash, FlashExt, WriteErase, FlashPage},
-};
-use squid_boot::{machine::{Flash, Machine}, icd::Parameters};
-use stm32g0xx_hal as hal;
-use hal::hal::serial::{Read, Write};
 use hal::block;
+use hal::hal::serial::{Read, Write};
+use hal::{
+    flash::{FlashExt, FlashPage, UnlockedFlash, WriteErase},
+    gpio::GpioExt,
+    prelude::{OutputPin, ToggleableOutputPin},
+    rcc::{Config, PllConfig, Prescaler, RccExt},
+    serial::BasicConfig,
+    stm32,
+    time::U32Ext,
+};
+use squid_boot::{
+    icd::Parameters,
+    machine::{Flash, Machine},
+};
+use stm32g0xx_hal as hal;
 
 //  0KiB - 14KiB: Bootloader
 // 14KiB - 16KiB: Settings
@@ -65,10 +71,7 @@ impl Flash for StmFlash {
     fn read_settings_raw(&mut self) -> &[u8] {
         unsafe {
             core::sync::atomic::fence(Ordering::AcqRel);
-            core::slice::from_raw_parts(
-                0x0800_3800usize as *const u8,
-                PARAMS.settings_max as usize,
-            )
+            core::slice::from_raw_parts(0x0800_3800usize as *const u8, PARAMS.settings_max as usize)
         }
     }
 
@@ -116,12 +119,8 @@ fn imain() -> Option<()> {
         .baudrate(115200u32.bps())
         .parity_none();
 
-    let usart2 = hal::serial::Serial::usart2(
-        board.USART2,
-        (gpioa.pa2, gpioa.pa3),
-        cfg,
-        &mut rcc,
-    ).ok()?;
+    let usart2 =
+        hal::serial::Serial::usart2(board.USART2, (gpioa.pa2, gpioa.pa3), cfg, &mut rcc).ok()?;
 
     GlobalRollingTimer::init(board.TIM2);
 
@@ -142,9 +141,7 @@ fn imain() -> Option<()> {
         SCB::sys_reset();
     };
 
-
     let mut machine = Machine::new(StmFlash { hw: flash });
-
 
     'process: loop {
         let mut idx = 0;

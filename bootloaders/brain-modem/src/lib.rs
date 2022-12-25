@@ -7,14 +7,7 @@ use stm32g0xx_hal as _;
 use groundhog::RollingTimer;
 // use embedded_hal::blocking::delay::{DelayUs, DelayMs};
 use core::sync::atomic::{AtomicPtr, Ordering};
-use stm32g0xx_hal::{
-    // rcc::Rcc,
-    stm32::{
-        TIM2,
-        RCC,
-        tim2::RegisterBlock as Tim2Rb,
-    },
-};
+use stm32g0xx_hal::stm32::{tim2::RegisterBlock as Tim2Rb, RCC, TIM2};
 
 static TIMER_PTR: AtomicPtr<Tim2Rb> = AtomicPtr::new(core::ptr::null_mut());
 
@@ -26,12 +19,11 @@ impl GlobalRollingTimer {
     }
 
     pub fn init(timer: TIM2) {
-        let rcc = unsafe {&*RCC::ptr()};
+        let rcc = unsafe { &*RCC::ptr() };
 
         rcc.apbenr1.modify(|_, w| w.tim2en().set_bit());
         rcc.apbrstr1.modify(|_, w| w.tim2rst().set_bit());
         rcc.apbrstr1.modify(|_, w| w.tim2rst().clear_bit());
-
 
         // pause
         timer.cr1.modify(|_, w| w.cen().clear_bit());
