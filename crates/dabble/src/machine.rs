@@ -233,7 +233,7 @@ impl<HW: Flash> Machine<HW> {
     }
 
     #[inline]
-    pub fn respond<'a>(
+    fn respond<'a>(
         &mut self,
         msg: Result<Response<'static>, ResponseError>,
         buf: &'a mut [u8],
