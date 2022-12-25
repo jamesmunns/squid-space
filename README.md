@@ -1,0 +1,4 @@
+# squiiiiiiiiiiiiiiiiiid
+
+all rights reserved
+
